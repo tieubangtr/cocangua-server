@@ -28,12 +28,12 @@ app.use(express.urlencoded({ extended: true }));
 
 //Database connection
 //Localhost xampp
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "cangua",
-});
+// const connection = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "cangua",
+// });
 //Shangans.com database
 // const connection = mysql.createConnection({
 //   host: "localhost",
@@ -41,7 +41,12 @@ const connection = mysql.createConnection({
 //   password: "webcuadancephung",
 //   database: "shangans_cangua",
 // });
-
+//Heroku app mysql connect
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "b75da25e30c1cd",
+  password: "a3658172",
+});
 
 
 //Socket.io handlers
@@ -414,4 +419,4 @@ app.post("/api/removeUser", (req, res) =>{
   })
 })
 
-server.listen(4000);
+server.listen();
