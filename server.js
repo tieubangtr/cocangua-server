@@ -18,7 +18,7 @@ var port = process.env.PORT || 4000;
 const server = http.createServer(app);
 const io = socketio(server, {
   cors: {
-      origin: "https://mysterious-plains-13204.herokuapp.com",
+      origin: "*",
       methods: ["GET", "POST"]
     }
   }
