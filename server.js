@@ -43,18 +43,15 @@ app.use(express.urlencoded({ extended: true }));
 // });
 //Heroku app mysql connect
 const connection = mysql.createConnection({
-  host: "localhost",
+  host: "us-cdbr-east-03.cleardb.com",
   user: "b75da25e30c1cd",
   password: "a3658172",
+  database: "heroku_2e8bcab76e150c4"
 });
 
 
 //Socket.io handlers
 //Room chat handlers
-io.on('connection', socket =>{
-  console.log('new user');
-  socket.emit('chat-message', 'Hello World');
-})
 
 //Homepage
 app.get('/', (req, res) =>{
@@ -91,14 +88,14 @@ app.post("/api/signup", async (req, res) => {
     } else {
       //Insert new user
       var sql =
-        "INSERT INTO `users`(`username`, `email`, `gender`, `wins`, `friends`, `password`)" +
+        "INSERT INTO `users`(`username`, `email`, `gender`,`avatar`, `wins`, `password`)" +
         "VALUES ('" +
         username +
         "', '" +
         email +
         "', '" +
         gender +
-        "', 0, '[]', '" +
+        "', 1, 0, '" +
         hashedPassword.toString() +
         "')";
       connection.query(sql, (err) => {
@@ -158,7 +155,7 @@ app.post('/api/getInfo', (req, res) =>{
       res.json({ status : error, message : err});
     }else{
       const username = user.user;
-      const sql = "select id, username, email, gender, wins, friends from users where username = '" + username + "' ;";
+      const sql = "select id, username, email, gender, avatar, wins from users where username = '" + username + "' ;";
       connection.query(sql, async (err, result) =>{
         if(err){
           res.json(err);
@@ -271,7 +268,7 @@ app.post("/api/createRoom", (req, res) =>{
     }else{
       console.log(user);
       const username = user.user;
-      const sqlGetUser = "select id, username, wins, friends, gender from users where username = '" + username + "';";
+      const sqlGetUser = "select id, username, wins, avatar, gender from users where username = '" + username + "';";
       connection.query(sqlGetUser, (err, result1) =>{
         if(err){
           res.json({status : "error", message: err})
