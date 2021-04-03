@@ -12,6 +12,8 @@ const socketio = require('socket.io');
 const path = require('path');
 
 
+var port = process.env.PORT || 4000;
+
 //Socket IO
 const server = http.createServer(app);
 const io = socketio(server, {
@@ -416,4 +418,4 @@ app.post("/removeUser", (req, res) =>{
   })
 })
 
-server.listen(4000);
+server.listen(port);
