@@ -27,7 +27,7 @@ const connection = mysql.createConnection({
 const server = http.createServer(app);
 const io = socketio(server, {
   
-      origin: "https://laughing-blackwell-3e42c2.netlify.app"
+      origin: "https://cocangua-server.herokuapp.com/"
   }
 );
 
