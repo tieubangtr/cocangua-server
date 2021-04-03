@@ -2,9 +2,13 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "engines": {
+    "node": "14.x",
+    "npm": "7.x"
+  },
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "devStart": "nodemon server.js",
     "testStart": "nodemon test.js"
   },
