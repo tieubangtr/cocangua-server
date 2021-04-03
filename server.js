@@ -57,7 +57,7 @@ const connection = mysql.createConnection({
 
 //Homepage
 app.get('/', (req, res) =>{
-  res.send("Hello la bo may day may tk cac con");
+  res.sendFile(path.join(__dirname+'/index.html'));
 })
 
 //Signup handler
