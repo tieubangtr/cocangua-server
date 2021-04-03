@@ -16,7 +16,7 @@ const path = require('path');
 const server = http.createServer(app);
 const io = socketio(server, {
   cors: {
-      origin: "http://localhost:3000",
+      origin: "https://cocangua-server.herokuapp.com/",
       methods: ["GET", "POST"]
     }
   }
@@ -66,7 +66,7 @@ app.get('/', (req, res) =>{
 //   "email": "tieubangtrw@gmail.com",
 //   "password": "vietanh"
 // }
-app.post("/api/signup", async (req, res) => {
+app.post("/signup", async (req, res) => {
   
   const { username, password, gender, email } = req.body;
   const salt = await bcrypt.genSalt();
@@ -112,7 +112,7 @@ app.post("/api/signup", async (req, res) => {
 //   "username": "aaaaaaa",
 //   "password": "belolicute"
 // }
-app.post("/api/signin", (req, res) => {
+app.post("/signin", (req, res) => {
   const requestedUsername = req.body.username;
   const requestedPassword = req.body.password;
   var sql =
@@ -148,7 +148,7 @@ app.post("/api/signin", (req, res) => {
 // {
 //   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiZGFuY2VwaHVuZzYiLCJpYXQiOjE2MTcxNzc3MjIsImV4cCI6MTYxNzIyMDkyMn0.H73fpq6ay77qflzvVwoXwNBERlQqMQOEFrefjwccwUI"
 // }
-app.post('/api/getInfo', (req, res) =>{
+app.post('/getInfo', (req, res) =>{
   console.log(req.body.token);
   jwt.verify(req.body.token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
     if(err){
@@ -186,7 +186,7 @@ const transporter = nodemailer.createTransport({
 // {
 //   "username" : "aaaaaaa"
 // }
-app.post("/api/resetPasswordRequest", (req, res) =>{
+app.post("/resetPasswordRequest", (req, res) =>{
   const requestedUsername = req.body.username;
     const sql = "select email from users where username = '" + requestedUsername + "';";
     connection.query(sql, async (err, result1) =>{
@@ -229,7 +229,7 @@ app.post("/api/resetPasswordRequest", (req, res) =>{
 //   "username" : "aaaaaaa",
 //   "password" : "lolicute"
 // }
-app.post('/api/resetPasswordConfirm',  (req, res) =>{
+app.post('/resetPasswordConfirm',  (req, res) =>{
   const username = req.body.username;
   const skymtp = req.body.key;
   const newPassword = req.body.password;
@@ -261,7 +261,7 @@ app.post('/api/resetPasswordConfirm',  (req, res) =>{
 // {
 //   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWFhYWFhYSIsImlhdCI6MTYxNzE4NDQwMSwiZXhwIjoxNjE3MjI3NjAxfQ.SZoeIC2gr4Wwj59AuV7i9feE97LvbChBD5kmWwET5bs"
 // }
-app.post("/api/createRoom", (req, res) =>{
+app.post("/createRoom", (req, res) =>{
   jwt.verify(req.body.token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
     if(err){
       res.json({ status : error, message : err});
@@ -294,7 +294,7 @@ app.post("/api/createRoom", (req, res) =>{
 // {
 //   "rid": "7k6o27kfys7mmu6ocmeli0i"
 // }
-app.post('/api/findRoom', (req, res) =>{
+app.post('/findRoom', (req, res) =>{
   const roomId = req.body.rid;
   const sql = "select * from rooms where roomId like '%"+ roomId +"%' and status = 1";
   connection.query(sql, (err, result) =>{
@@ -313,7 +313,7 @@ app.post('/api/findRoom', (req, res) =>{
 //   "email": "conmechungmay@gmail.com",
 //   "gender" : false
 // }
-app.post('/api/updateUser', (req, res) =>{
+app.post('/updateUser', (req, res) =>{
   const userEmail = req.body.email;
   const gender = req.body.gender;
   jwt.verify(req.body.token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
@@ -339,7 +339,7 @@ app.post('/api/updateUser', (req, res) =>{
 //   "old": "lolicute",
 //   "new" : "belolicute"
 // }
-app.post('/api/updatePassword', (req, res) =>{
+app.post('/updatePassword', (req, res) =>{
   const oldPass = req.body.old;
   const newPass = req.body.new;
   jwt.verify(req.body.token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
@@ -375,7 +375,7 @@ app.post('/api/updatePassword', (req, res) =>{
 
 //Admin handlers
 //Get all users in the system
-app.post('/api/adminGetUsers', (req, res) =>{
+app.post('/adminGetUsers', (req, res) =>{
   jwt.verify(req.body.token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
     if(err){
       res.json({status : "error", message: err})
@@ -395,7 +395,7 @@ app.post('/api/adminGetUsers', (req, res) =>{
 
 
 //Remove an user from the system
-app.post("/api/removeUser", (req, res) =>{
+app.post("/removeUser", (req, res) =>{
   const userId = req.body.id;
   jwt.verify(req.body.token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
     const username = user.user;
