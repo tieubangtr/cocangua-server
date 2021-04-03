@@ -14,6 +14,11 @@ const path = require('path');
 
 var port = process.env.PORT || 4000;
 
+app.use(express.json());
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.options('*', cors());
+
 //Socket IO
 const server = http.createServer(app);
 const io = socketio(server, {
@@ -23,11 +28,6 @@ const io = socketio(server, {
     }
   }
 );
-
-app.use(express.json());
-app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-
 //Database connection
 //Localhost xampp
 // const connection = mysql.createConnection({
