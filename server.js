@@ -209,7 +209,7 @@ app.post("/resetPasswordRequest", (req, res) =>{
               from : 'support@giacmoduc.com',
               to : requestedEmail,
               subject: "Reset password of your account",
-              text : "Hello '" + requestedUsername + "', \Here is your secret key, do not share this code: '"+ rdmtp +"'\Many thanks hehehe!"
+              text : "Hello '" + requestedUsername + "', \Here is your secret key, do not share this code: '"+ rdmtp +"'\ Many thanks hehehe!"
             }
             transporter.sendMail(mailOptions, (err, result) =>{
               if(err){
