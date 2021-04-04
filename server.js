@@ -304,7 +304,7 @@ app.post('/findRoom', (req, res) =>{
       if(err){
         res.json({status : "error", message: err})
       }else{
-        res.json(result[0]);
+        res.json(result);
       }
     });
   }else{
