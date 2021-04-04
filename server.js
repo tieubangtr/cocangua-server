@@ -206,7 +206,7 @@ app.post("/resetPasswordRequest", (req, res) =>{
             res.json(err);
           }else{
             const mailOptions = {
-              from : 'support@shangans.com',
+              from : 'support@giacmoduc.com',
               to : requestedEmail,
               subject: "Reset password of your account",
               text : "Hello '" + requestedUsername + "', \Here is your secret key, do not share this code: '"+ rdmtp +"'\Many thanks hehehe!"
@@ -218,7 +218,6 @@ app.post("/resetPasswordRequest", (req, res) =>{
                 res.json({ status: "success", message : "Email sent"});
               }
             })
-            res.send("ok");
           }
         }) 
       }
