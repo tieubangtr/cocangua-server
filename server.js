@@ -172,15 +172,15 @@ app.post('/getInfo', (req, res) =>{
 
 //Reset password
 const transporter = nodemailer.createTransport({
-  host : 'shangans.com',
+  host : 'giacmoduc.com',
   secureConnection: false,
   tls: {
     rejectUnauthorized: false
   },
   port: 587,
   auth: {
-    user: 'support@shangans.com',
-    pass : 'webcuadancephung'
+    user: 'support@giacmoduc.com',
+    pass : 'tieubang123'
   }
 })
 
