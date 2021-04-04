@@ -313,17 +313,19 @@ app.post('/findRoom', (req, res) =>{
 // {
 //   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWFhYWFhYSIsImlhdCI6MTYxNzE4NDQwMSwiZXhwIjoxNjE3MjI3NjAxfQ.SZoeIC2gr4Wwj59AuV7i9feE97LvbChBD5kmWwET5bs",
 //   "email": "conmechungmay@gmail.com",
-//   "gender" : false
+//   "gender" : false,
+//   "avatar": 1
 // }
 app.post('/updateUser', (req, res) =>{
   const userEmail = req.body.email;
   const gender = req.body.gender;
+  const avatar = req.body.avatar;
   jwt.verify(req.body.token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
     if(err){
       res.json({status : "error", message: err})
     }else{
       username = user.user;
-      const sql = "update users set email = '" + userEmail + "', gender = " + gender + " where username = '"+ username +"';";
+      const sql = "update users set email = '" + userEmail + "', avatar = " + avatar + ", gender = " + gender + " where username = '"+ username +"';";
       connection.query(sql, (err, result) =>{
         if(err){
           res.json({status : "error", message: err})
