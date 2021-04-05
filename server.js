@@ -357,7 +357,7 @@ app.post('/joinRoom', (req, res) =>{
         }else{
           const userId = results[0].id;
           res.send(userId);
-          const sqlGetRoomInfo = "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" + roomId + "';";
+          // const sqlGetRoomInfo = "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" + roomId + "';";
           // connection.query(sqlGetRoomInfo, (err, results) =>{
           //   if(err){
           //     res.json({ status : "error", message : err});
