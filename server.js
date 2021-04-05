@@ -364,28 +364,27 @@ app.post('/joinRoom', (req, res) =>{
               const totalUser = results[0].totalUser;
               console.log(totalUser)
               const roomResult = results[0].result;
-              // if(totalUser < 1 || totalUser > 3){
-              //   res.json({ status : "error", message : "Cannot join this room"});
-              // }else{
-              //   totalUser += 1;
-              //   console.log(totalUser);
-              //   const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"' where roomId = '"+roomId+"'";
-              //   connection.query(sqlJoinRoom, (err, results) =>{
-              //     if(err){
-              //       res.json({ status : "error", message : err});
-              //     }else{
-              //       const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+");";
-              //       connection.query(sqlAddUserToARoom, (err, results) =>{
-              //         if(err){
-              //           res.json({ status : "error", message : err});
-              //         }else{
-
-              //           res.send("ok");
-              //         }
-              //       })
-              //     }
-              //   })
-              // }
+              if(totalUser < 1 || totalUser > 3){
+                res.json({ status : "error", message : "Cannot join this room"});
+              }else{
+                totalUser += 1;
+                console.log(totalUser);
+                const sqlJoinRoom = "update rooms set totalUser = "+ totalUser +" where roomId = '"+roomId+"'";
+                connection.query(sqlJoinRoom, (err, results) =>{
+                  if(err){
+                    res.json({ status : "error", message : err});
+                  }else{
+                    const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+");";
+                    connection.query(sqlAddUserToARoom, (err, results) =>{
+                      if(err){
+                        res.json({ status : "error", message : err});
+                      }else{
+                        res.send("ok");
+                      }
+                    })
+                  }
+                })
+              }
             }
           })
         }
