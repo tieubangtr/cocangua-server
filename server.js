@@ -373,15 +373,15 @@ app.post('/joinRoom', (req, res) =>{
                   if(err){
                     res.json({ status : "error", message : err});
                   }else{
-                    const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+");";
-                    connection.query(sqlAddUserToARoom, (err, results) =>{
-                      if(err){
-                        res.json({ status : "error", message : err});
-                      }else{
-                        
+                    // const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+");";
+                    // connection.query(sqlAddUserToARoom, (err, results) =>{
+                    //   if(err){
+                    //     res.json({ status : "error", message : err});
+                    //   }else{
+
                         res.send("ok");
-                      }
-                    })
+                    //   }
+                    // })
                   }
                 })
               }
