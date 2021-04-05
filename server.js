@@ -329,7 +329,7 @@ app.post('/findRoom', (req, res) =>{
       }
     });
   }else{
-    const sql = "select * from rooms where roomId like '%"+ roomId +"%' and status = 1";
+    const sql = "select * from rooms where roomId like '%"+ roomId +"' and status = 1";
     connection.query(sql, (err, result) =>{
       if(err){
         res.json({status : "error", message: err})
