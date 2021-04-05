@@ -368,22 +368,22 @@ app.post('/joinRoom', (req, res) =>{
               }else{
                 totalUser += 1;
                 console.log(totalUser);
-                const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"' where roomId = '"+roomId+"'";
-                connection.query(sqlJoinRoom, (err, results) =>{
-                  if(err){
-                    res.json({ status : "error", message : err});
-                  }else{
-                    // const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+");";
-                    // connection.query(sqlAddUserToARoom, (err, results) =>{
-                    //   if(err){
-                    //     res.json({ status : "error", message : err});
-                    //   }else{
+                // const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"' where roomId = '"+roomId+"'";
+                // connection.query(sqlJoinRoom, (err, results) =>{
+                //   if(err){
+                //     res.json({ status : "error", message : err});
+                //   }else{
+                //     // const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+");";
+                //     // connection.query(sqlAddUserToARoom, (err, results) =>{
+                //     //   if(err){
+                //     //     res.json({ status : "error", message : err});
+                //     //   }else{
 
-                        res.send("ok");
-                    //   }
-                    // })
-                  }
-                })
+                //         res.send("ok");
+                //     //   }
+                //     // })
+                //   }
+                // })
               }
             }
           })
