@@ -280,7 +280,7 @@ app.post('/resetPasswordConfirm',  (req, res) =>{
 app.post("/createRoom", (req, res) =>{
   jwt.verify(req.body.token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
     if(err){
-      res.json({ status : error, message : err});
+      res.json({ status : "error", message : err});
     }else{
       console.log(user);
       const username = user.user;
