@@ -54,6 +54,21 @@ const connection = mysql.createConnection({
 
 //Socket.io handlers
 //Room chat handlers
+io.on('connection', socket =>{
+  socket.emit('hello', "hello thang loz bum bum");
+
+  //New user join room
+  socket.on('new-user', name =>{
+    const welcomeMessage = name + " has joined the room, hello hello";
+    socket.broadcast.emit('welcome-message', welcomeMessage);
+  })
+
+  //When received new message
+  socket.on('send-message', data =>{
+      socket.broadcast.emit('chat-message', message);
+  })
+})
+
 
 //Homepage
 app.get('/', (req, res) =>{
@@ -276,12 +291,19 @@ app.post("/createRoom", (req, res) =>{
         }else{
           const userId = result1[0].id;
           const roomId = userId + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-          const sql = "INSERT INTO rooms(roomId, host, user1, user2, user3, user4, results, status, timestamp) VALUES ('" + roomId + "', " + userId + ", " + userId + ", null, null , null, '[]', 1, NOW())";
+          const sql = "INSERT INTO rooms(roomId, host, totalUser, results, status, timestamp) VALUES ('" + roomId + "', " + userId + ", 1, '[]', 1, NOW())";
           connection.query(sql, (err, result) =>{
             if(err){
               res.json({status : "error", message: err})
             }else{
-              res.json({status : "success", rid: roomId});
+              const sqlAddUser = "insert into room_user values('" + roomId + "', " + userId + ")";
+              connection.query(sqlAddUser, (err, results) =>{
+                if(err){
+                  res.json({status : "error", message: err});
+                }else{
+                  res.json({status : "success", rid: roomId});
+                }
+              })
             }
           })
         }
@@ -316,7 +338,29 @@ app.post('/findRoom', (req, res) =>{
       }
     });
   }
+})
 
+
+//Join a room
+app.post('/joinRoom', (req, res) =>{
+  const roomId = req.body.rid;
+  const token = req.body.token;
+  jwt.verify(token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
+    if(err){
+      res.json({ status : "error", message : err});
+    }else{
+      const username = user.user;
+      const sqlGetRoomInfo = "select * from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and roomId = '" + roomId + "';";
+      connection.query(sqlGetRoomInfo, (err, results) =>{
+        if(err){
+          res.json({ status : "error", message : err});
+        }else{
+          const roomData = results[0];
+          res.send(sqlGetRoomInfo);
+        }
+      })
+    }
+  })
 })
 
 
