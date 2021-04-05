@@ -356,7 +356,7 @@ app.post('/joinRoom', (req, res) =>{
           res.json({ status : "error", message : err});
         }else{
           const userId = results.id;
-          res.send(userId);
+          console.log(userId);
           // const sqlGetRoomInfo = "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" + roomId + "';";
           // connection.query(sqlGetRoomInfo, (err, results) =>{
           //   if(err){
