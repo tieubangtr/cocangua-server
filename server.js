@@ -367,16 +367,18 @@ app.post('/joinRoom', (req, res) =>{
                 res.json({ status : "error", message : "Cannot join this room"});
               }else{
                 totalUser += 1;
-                const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"'";
+                console.log(totalUser);
+                const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"' where roomId = '"+roomId+"'";
                 connection.query(sqlJoinRoom, (err, results) =>{
                   if(err){
                     res.json({ status : "error", message : err});
                   }else{
-                    const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+")";
+                    const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+");";
                     connection.query(sqlAddUserToARoom, (err, results) =>{
                       if(err){
                         res.json({ status : "error", message : err});
                       }else{
+                        
                         res.send("ok");
                       }
                     })
