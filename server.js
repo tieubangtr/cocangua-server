@@ -361,29 +361,28 @@ app.post('/joinRoom', (req, res) =>{
             if(err){
               res.json({ status : "error", message : err});
             }else{
-              res.json(results);
-              // const totalUser = results[0].totalUser;
-              // const roomResult = results[0].result;
-              // if(totalUser < 1 || totalUser > 3){
-              //   res.json({ status : "error", message : "Cannot join this room"});
-              // }else{
-              //   totalUser += 1;
-              //   const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"'";
-              //   connection.query(sqlJoinRoom, (err, results) =>{
-              //     if(err){
-              //       res.json({ status : "error", message : err});
-              //     }else{
-              //       const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+")";
-              //       connection.query(sqlAddUserToARoom, (err, results) =>{
-              //         if(err){
-              //           res.json({ status : "error", message : err});
-              //         }else{
-              //           res.send("ok");
-              //         }
-              //       })
-              //     }
-              //   })
-              // }
+              const totalUser = results[0].totalUser;
+              const roomResult = results[0].result;
+              if(totalUser < 1 || totalUser > 3){
+                res.json({ status : "error", message : "Cannot join this room"});
+              }else{
+                totalUser += 1;
+                const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"'";
+                connection.query(sqlJoinRoom, (err, results) =>{
+                  if(err){
+                    res.json({ status : "error", message : err});
+                  }else{
+                    const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+")";
+                    connection.query(sqlAddUserToARoom, (err, results) =>{
+                      if(err){
+                        res.json({ status : "error", message : err});
+                      }else{
+                        res.send("ok");
+                      }
+                    })
+                  }
+                })
+              }
             }
           })
         }
