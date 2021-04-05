@@ -350,14 +350,45 @@ app.post('/joinRoom', (req, res) =>{
       res.json({ status : "error", message : err});
     }else{
       const username = user.user;
-      const sqlGetRoomInfo = "select * from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" + roomId + "';";
-      connection.query(sqlGetRoomInfo, (err, results) =>{
+      const sqlGetUserInfo = "select id from users where username = '"+username+"'";
+      connection.query(sqlGetUserInfo, (err, results) =>{
         if(err){
           res.json({ status : "error", message : err});
         }else{
-          res.json(results);
+          const userId = results[0].id;
+          const sqlGetRoomInfo = "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" + roomId + "';";
+          connection.query(sqlGetRoomInfo, (err, results) =>{
+            if(err){
+              res.json({ status : "error", message : err});
+            }else{
+              const totalUser = results[0].totalUser;
+              const roomResult = results[0].result;
+    
+              if(totalUser < 1 || totalUser > 3){
+                res.json({ status : "error", message : "Cannot join this room"});
+              }else{
+                totalUser += 1;
+                const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"'";
+                connection.query(sqlJoinRoom, (err, results) =>{
+                  if(err){
+                    res.json({ status : "error", message : err});
+                  }else{
+                    const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+")";
+                    connection.query(sqlAddUserToARoom, (err, results) =>{
+                      if(err){
+                        res.json({ status : "error", message : err});
+                      }else{
+                        res.send("ok");
+                      }
+                    })
+                  }
+                })
+              }
+            }
+          })
         }
       })
+      
     }
   })
 })
