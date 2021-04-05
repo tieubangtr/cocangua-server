@@ -291,7 +291,7 @@ app.post("/createRoom", (req, res) =>{
         }else{
           const userId = result1[0].id;
           const roomId = userId + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-          const sql = "INSERT INTO rooms(roomId, host, totalUser, results, status, timestamp) VALUES ('" + roomId + "', " + userId + ", 1, '[]', 1, NOW())";
+          const sql = "INSERT INTO rooms(roomId, host, totalUser, result, status, timestamp) VALUES ('" + roomId + "', " + userId + ", 1, '[]', 1, NOW())";
           connection.query(sql, (err, result) =>{
             if(err){
               res.json({status : "error", message: err})
