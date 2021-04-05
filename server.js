@@ -355,8 +355,7 @@ app.post('/joinRoom', (req, res) =>{
         if(err){
           res.json({ status : "error", message : err});
         }else{
-          const roomData = results[0];
-          res.send(sqlGetRoomInfo);
+          res.json(result);
         }
       })
     }
