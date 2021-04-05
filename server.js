@@ -355,7 +355,7 @@ app.post('/joinRoom', (req, res) =>{
         if(err){
           res.json({ status : "error", message : err});
         }else{
-          res.json(result);
+          res.json(results);
         }
       })
     }
