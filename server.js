@@ -356,36 +356,36 @@ app.post('/joinRoom', (req, res) =>{
           res.json({ status : "error", message : err});
         }else{
           const userId = results[0].id;
+          res.send(userId);
           const sqlGetRoomInfo = "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" + roomId + "';";
-          connection.query(sqlGetRoomInfo, (err, results) =>{
-            if(err){
-              res.json({ status : "error", message : err});
-            }else{
-              const totalUser = results[0].totalUser;
-              const roomResult = results[0].result;
-    
-              if(totalUser < 1 || totalUser > 3){
-                res.json({ status : "error", message : "Cannot join this room"});
-              }else{
-                totalUser += 1;
-                const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"'";
-                connection.query(sqlJoinRoom, (err, results) =>{
-                  if(err){
-                    res.json({ status : "error", message : err});
-                  }else{
-                    const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+")";
-                    connection.query(sqlAddUserToARoom, (err, results) =>{
-                      if(err){
-                        res.json({ status : "error", message : err});
-                      }else{
-                        res.send("ok");
-                      }
-                    })
-                  }
-                })
-              }
-            }
-          })
+          // connection.query(sqlGetRoomInfo, (err, results) =>{
+          //   if(err){
+          //     res.json({ status : "error", message : err});
+          //   }else{
+          //     const totalUser = results[0].totalUser;
+          //     const roomResult = results[0].result;
+          //     if(totalUser < 1 || totalUser > 3){
+          //       res.json({ status : "error", message : "Cannot join this room"});
+          //     }else{
+          //       totalUser += 1;
+          //       const sqlJoinRoom = "update rooms set totalUser = '"+ totalUser +"'";
+          //       connection.query(sqlJoinRoom, (err, results) =>{
+          //         if(err){
+          //           res.json({ status : "error", message : err});
+          //         }else{
+          //           const sqlAddUserToARoom = "insert into room_user values('"+ roomId +"', "+userId+")";
+          //           connection.query(sqlAddUserToARoom, (err, results) =>{
+          //             if(err){
+          //               res.json({ status : "error", message : err});
+          //             }else{
+          //               res.send("ok");
+          //             }
+          //           })
+          //         }
+          //       })
+          //     }
+          //   }
+          // })
         }
       })
       
