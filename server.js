@@ -361,7 +361,7 @@ app.post('/joinRoom', (req, res) =>{
             if(err){
               res.json({ status : "error", message : err});
             }else{
-              const totalUser = results[0].totalUser;
+              const totalUser = parseInt(results[0].totalUser);
               console.log(totalUser)
               const roomResult = results[0].result;
               if(totalUser < 1 || totalUser > 3){
