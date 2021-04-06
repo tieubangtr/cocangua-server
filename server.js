@@ -10,7 +10,7 @@ const nodemailer = require('nodemailer');
 const http = require('http');
 const socketio = require('socket.io');
 const path = require('path');
-
+const moment = require('moment');
 
 var port = process.env.PORT || 4000;
 
@@ -54,18 +54,58 @@ const connection = mysql.createConnection({
 
 //Socket.io handlers
 //Room chat handlers
-io.on('connection', socket =>{
-  socket.emit('hello', "hello thang loz bum bum");
+const userConnection = {};
 
-  //New user join room
+io.on('connection', socket =>{
+  // let newUserToken = socket.handshake.query.token;
+  // const newUserId = socket.id;
+  // userConnection[socket.id] = newUserToken;
+  // console.log(userConnection);
+  // console.log(socket);
+  // io.sockets.sockets.forEach((sk) => {
+  //   // If given socket id is exist in list of all sockets, kill it
+  //   if(sk.id === newUserId){
+  //     delete userConnection[sk.id];
+  //     sk.disconnect(true);
+  //   }
+  // });
+
+  socket.on('disconnect', data =>{
+    console.log("cac");
+  })
+  // userConnection[socket.id] = 1;
+  // console.log(userConnection);
+  // socket.emit('hello', "hello thang loz bum bum");
+
+  // //New user join room
   socket.on('new-user', name =>{
     const welcomeMessage = name + " has joined the room, hello hello";
     socket.broadcast.emit('welcome-message', welcomeMessage);
   })
 
-  //When received new message
+  // //When received new message
   socket.on('send-message', data =>{
-      socket.broadcast.emit('chat-message', message);
+    console.log(data);
+    let token = data.token;
+    jwt.verify(token, 'daylamabimatkhongtknaoduocdongvao', (err, user) =>{
+      if(user){
+        let username = user.user;
+        const sql = "select * from users where username = '"+username+"'";
+        connection.query(sql, (err, results) =>{
+          let avatar = results[0].avatar;
+          let roomId = data.rid;
+          let content = data.content;
+          let response = {
+            username : username,
+            content : content,
+            date: new Date(),
+            rid : roomId,
+            avatar : avatar
+          }
+          socket.broadcast.emit('new-message', response);
+        })
+      }
+    })
   })
 })
 
@@ -379,7 +419,7 @@ app.post('/joinRoom', (req, res) =>{
                       if(err){
                         res.json({ status : "error", message : err});
                       }else{
-                        res.send("ok");
+                        res.json({ status : "success", message : "Joined"});
                       }
                     })
                   }
@@ -389,7 +429,6 @@ app.post('/joinRoom', (req, res) =>{
           })
         }
       })
-      
     }
   })
 })
