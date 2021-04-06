@@ -10,7 +10,6 @@ const nodemailer = require('nodemailer');
 const http = require('http');
 const socketio = require('socket.io');
 const path = require('path');
-const moment = require('moment');
 
 var port = process.env.PORT || 4000;
 
