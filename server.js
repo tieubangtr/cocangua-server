@@ -80,8 +80,8 @@ io.on("connection", (socket) => {
           if (!err) {
             const userId = results[0].id;
             const sqlGetRoomInfo =
-              "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" +
-              roomId +
+              "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.host = '" +
+              userId +
               "';";
             connection.query(sqlGetRoomInfo, (err, results) => {
               if (!err) {
