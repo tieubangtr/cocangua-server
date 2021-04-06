@@ -83,6 +83,7 @@ io.on("connection", (socket) => {
               "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.host = '" +
               userId +
               "';";
+              console.log(sqlGetRoomInfo);
             connection.query(sqlGetRoomInfo, (err, results) => {
               if (!err) {
                 const users = {};
