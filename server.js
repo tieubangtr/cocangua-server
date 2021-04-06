@@ -11,7 +11,7 @@ const http = require("http");
 const socketio = require("socket.io");
 const path = require("path");
 
-var port = process.env.PORT || 4000;
+var port = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(cors());
@@ -54,61 +54,161 @@ const connection = mysql.createConnection({
 const userConnection = {};
 
 io.on("connection", (socket) => {
-  const newUserToken = socket.handshake.query.token;
-  const newUserId = socket.id;
-  userConnection[socket.id] = newUserToken;
-  console.log(userConnection);
-  // console.log(socket);
-  // io.sockets.sockets.forEach((sk) => {
-  //   // If given socket id is exist in list of all sockets, kill it
-  //   if (sk.id === newUserId) {
-  //     delete userConnection[sk.id];
-  //     sk.disconnect(true);
-  //   }
-  // });
-
-  socket.on("disconnect", (data) => {
-    console.log("con cac" + newUserToken);
-    jwt.verify(newUserToken, "daylamabimatkhongtknaoduocdongvao", (err, user) => {
-      const username = user.user
-      sqlGetId = "select id from users where username = '"+username+"'";
-      connection.query(sqlGetId, (err, results) =>{
-
-      })
-    })
-    console.log(socket.id);
-    delete userConnection[socket.id];
+  console.log("New user has connected!");
+  try {
+    const newUserToken = socket.handshake.query.token;
+    const newUserId = socket.id;
+    userConnection[socket.id] = newUserToken;
     console.log(userConnection);
-  });
-  // userConnection[socket.id] = 1;
-  // console.log(userConnection);
-  // socket.emit('hello', "hello thang loz bum bum");
+    // console.log(socket);
+    // io.sockets.sockets.forEach((sk) => {
+    //   // If given socket id is exist in list of all sockets, kill it
+    //   if (sk.id === newUserId) {
+    //     delete userConnection[sk.id];
+    //     sk.disconnect(true);
+    //   }
+    // });
 
-  // //When received new message
-  socket.on("send-message", (data) => {
-    console.log(data);
-    let token = data.token;
-    jwt.verify(token, "daylamabimatkhongtknaoduocdongvao", (err, user) => {
-      if (user) {
-        let username = user.user;
-        const sql = "select * from users where username = '" + username + "'";
-        connection.query(sql, (err, results) => {
-          let avatar = results[0].avatar;
-          let roomId = data.rid;
-          let content = data.content;
-          let response = {
-            username: username,
-            content: content,
-            date: new Date(),
-            rid: roomId,
-            avatar: avatar,
-          };
-          console.log(response);
-          socket.broadcast.emit("new-message", response);
-        });
+    socket.on("disconnect", (data) => {
+      console.log("con cac " + newUserToken);
+      if (newUserToken) {
+        jwt.verify(
+          newUserToken,
+          "daylamabimatkhongtknaoduocdongvao",
+          (err, user) => {
+            const username = user.user; //undidfgasdfg
+            sqlGetId =
+              "select id from users where username = '" + username + "'";
+            connection.query(sqlGetId, (err, results) => {
+              const userId = results[0].id;
+              const sqlRemove1 =
+                "select roomId from room_user where userId = " + userId + ";";
+              connection.query(sqlRemove1, (err, results) => {
+                console.log(results);
+                if (results.length == 0) {
+                  console.log("An user has disconnected!");
+                } else {
+                  const roomId = results[0].roomId;
+                  sqlRemove2 =
+                    "delete from room_user where roomId = '" +
+                    roomId +
+                    "' and userId = " +
+                    userId +
+                    " ;";
+                  connection.query(sqlRemove2, (err, results) => {
+                    const sqlSelectRoom =
+                      "select * from rooms where roomId = '" + roomId + "'";
+                    connection.query(sqlSelectRoom, (err, results) => {
+                      let totalUser = parseInt(results[0].totalUser);
+                      if (
+                        results[0].host == userId &&
+                        results[0].totalUser == 1
+                      ) {
+                        const sqlUpdateRoom =
+                          "update rooms set host = null, totalUser = 0, status = 0 where roomId = '" +
+                          roomId +
+                          "'";
+                        connection.query(sqlUpdateRoom, (err, results) => {
+                          console.log(
+                            "An user has disconnected, room status changed!"
+                          );
+                        });
+                      } else {
+                        const sqlSelectUsers =
+                          "select * from room_user where roomId = '" +
+                          roomId +
+                          "' limit 1";
+                        connection.query(sqlSelectUsers, (err, results) => {
+                          const newHostId = results[0].userId;
+                          totalUser -= 1;
+                          const sqlUpdateRoom =
+                            "update rooms set totalUser = " +
+                            totalUser +
+                            ", host = " +
+                            newHostId +
+                            " where roomId = '" +
+                            roomId +
+                            "';";
+                          connection.query(sqlUpdateRoom, (err, results) => {
+                            const sqlGetRoomInfo =
+                              "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" +
+                              roomId +
+                              "';";
+                            connection.query(sqlGetRoomInfo, (err, results) => {
+                              const users = {};
+                              for (let i = 0; i < 4; i++) {
+                                if (results[i]) {
+                                  users["user" + i] = {
+                                    id: results[i].id,
+                                    username: results[i].username,
+                                    gender: results[i].gender,
+                                    avatar: results[i].avatar,
+                                  };
+                                } else {
+                                  users["user" + i] = null;
+                                }
+                              }
+                              const roomResult = {
+                                roomId: results[0].roomId,
+                                result: results[0].result,
+                                totalUser: results[0].totalUser,
+                                users: users,
+                              };
+                              console.log(roomResult);
+                              socket.emit("new-room-info", {
+                                data: roomResult,
+                              });
+                              console.log("Update room info ok baby!");
+                            });
+                          });
+                        });
+                      }
+                    });
+                  });
+                }
+              });
+            });
+          }
+        );
+        console.log(socket.id);
+        delete userConnection[socket.id];
+        console.log(userConnection);
+      } else {
+        console.log("An user has disconnected!");
       }
     });
-  });
+    // userConnection[socket.id] = 1;
+    // console.log(userConnection);
+    // socket.emit('hello', "hello thang loz bum bum");
+
+    // //When received new message
+    socket.on("send-message", (data) => {
+      console.log(data);
+      let token = data.token;
+      jwt.verify(token, "daylamabimatkhongtknaoduocdongvao", (err, user) => {
+        if (user) {
+          let username = user.user;
+          const sql = "select * from users where username = '" + username + "'";
+          connection.query(sql, (err, results) => {
+            let avatar = results[0].avatar;
+            let roomId = data.rid;
+            let content = data.content;
+            let response = {
+              username: username,
+              content: content,
+              date: new Date(),
+              rid: roomId,
+              avatar: avatar,
+            };
+            console.log(response);
+            socket.broadcast.emit("new-message", response);
+          });
+        }
+      });
+    });
+  } catch (e) {
+    console.log(e);
+  }
 });
 
 //Homepage
@@ -392,9 +492,31 @@ app.post("/createRoom", (req, res) => {
                     res.json({ status: "error", message: err });
                   } else {
                     const sqlGetRoomInfo =
-                      "select * from rooms r, room_user ru where r.roomId = ru.roomId and r.host = ru.userId";
+                      "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.host = " +
+                      userId +
+                      " and r.status = 1;";
                     connection.query(sqlGetRoomInfo, (err, results) => {
-                      res.json({ status: "success", data: results[0] });
+                      console.log(results);
+                      const users = {
+                        user0: {
+                          id: results[0].id,
+                          username: results[0].username,
+                          gender: results[0].gender,
+                          avatar: results[0].avatar,
+                          wins: results[0].wins,
+                        },
+                        user1: null,
+                        user2: null,
+                        user3: null,
+                      };
+                      const roomResult = {
+                        roomId: results[0].roomId,
+                        result: results[0].result,
+                        totalUser: results[0].totalUser,
+                        users: users,
+                      };
+                      res.json({ status: "success", data: roomResult });
+                      console.log("New room created!");
                     });
                   }
                 });
