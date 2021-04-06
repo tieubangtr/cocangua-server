@@ -61,13 +61,65 @@ io.on("connection", (socket) => {
     userConnection[socket.id] = newUserToken;
     console.log(userConnection);
     // console.log(socket);
-    // io.sockets.sockets.forEach((sk) => {
+    // io.sockets.sockets.forEach((sk) => {no
     //   // If given socket id is exist in list of all sockets, kill it
     //   if (sk.id === newUserId) {
     //     delete userConnection[sk.id];
     //     sk.disconnect(true);
     //   }
     // });
+
+    socket.on('join-room', data =>{
+      const roomId = data.rid;
+      const token = data.token;
+      jwt.verify(token, "daylamabimatkhongtknaoduocdongvao", (err, user) => {
+        const username = user.user;
+        const sqlGetUserInfo =
+          "select id from users where username = '" + username + "'";
+          connection.query(sqlGetUserInfo, (err, results) => {
+          if (!err) {
+            const userId = results[0].id;
+            const sqlGetRoomInfo =
+              "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" +
+              roomId +
+              "';";
+            connection.query(sqlGetRoomInfo, (err, results) => {
+              if (!err) {
+                const users = {};
+                for (let i = 0; i < 4; i++) {
+                  if (results[i]) {
+                    users["user" + i] = {
+                      id: results[i].id,
+                      username: results[i].username,
+                      gender: results[i].gender,
+                      avatar: results[i].avatar,
+                    };
+                  } else {
+                    users["user" + i] = null;
+                  }
+                }
+                const roomResult = {
+                  roomId: results[0].roomId,
+                  result: results[0].result,
+                  totalUser: results[0].totalUser,
+                  users: users,
+                };
+                console.log(roomResult);
+                const sqlAddUserToARoom =
+                  "insert into room_user values('" +
+                  roomId +
+                  "', " +
+                  userId +
+                  ");";
+                connection.query(sqlAddUserToARoom, (err, results) => {
+                    socket.broadcast.emit("new-user-join", { status: "success", data: roomResult });
+                  });
+                }
+              });
+            }
+      });
+    })
+  })
 
     socket.on("disconnect", (data) => {
       console.log("con cac " + newUserToken);
