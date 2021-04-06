@@ -680,6 +680,7 @@ app.post("/joinRoom", (req, res) => {
                         res.json({ status: "error", message: err });
                       } else {
                         res.json({ status: "success", data: roomResult });
+                        console.log(roomResult);
                       }
                     });
                   }
