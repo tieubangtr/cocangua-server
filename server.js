@@ -70,7 +70,7 @@ io.on("connection", (socket) => {
     // });
 
     socket.on("join-room", (data) => {
-      console.log(data);
+      console.log("Du lieu gui len la cai nay: " +data);
       // const roomId = data.rid;
       // const token = data.token;
       // jwt.verify(token, "daylamabimatkhongtknaoduocdongvao", (err, user) => {
