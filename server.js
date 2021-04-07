@@ -69,58 +69,62 @@ io.on("connection", (socket) => {
     //   }
     // });
 
-    socket.on('join-room', data =>{
-      const roomId = data.rid;
-      const token = data.token;
-      jwt.verify(token, "daylamabimatkhongtknaoduocdongvao", (err, user) => {
-        const username = user.user;
-        const sqlGetUserInfo =
-          "select id from users where username = '" + username + "'";
-          connection.query(sqlGetUserInfo, (err, results) => {
-          if (!err) {
-            const userId = results[0].id;
-            const sqlGetRoomInfo =
-              "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.host = '" +
-              userId +
-              "';";
-              console.log(sqlGetRoomInfo);
-            connection.query(sqlGetRoomInfo, (err, results) => {
-              if (!err) {
-                const users = {};
-                for (let i = 0; i < 4; i++) {
-                  if (results[i]) {
-                    users["user" + i] = {
-                      id: results[i].id,
-                      username: results[i].username,
-                      gender: results[i].gender,
-                      avatar: results[i].avatar,
-                    };
-                  } else {
-                    users["user" + i] = null;
-                  }
-                }
-                const roomResult = {
-                  roomId: results[0].roomId,
-                  result: results[0].result,
-                  totalUser: results[0].totalUser,
-                  users: users,
-                };
-                console.log(roomResult);
-                const sqlAddUserToARoom =
-                  "insert into room_user values('" +
-                  roomId +
-                  "', " +
-                  userId +
-                  ");";
-                connection.query(sqlAddUserToARoom, (err, results) => {
-                    socket.broadcast.emit("new-user-join", { status: "success", data: roomResult });
-                  });
-                }
-              });
-            }
-      });
-    })
-  })
+    // socket.on("join-room", (data) => {
+    //   console.log(data);
+    //   const roomId = data.rid;
+    //   const token = data.token;
+    //   jwt.verify(token, "daylamabimatkhongtknaoduocdongvao", (err, user) => {
+    //     const username = user.user;
+    //     const sqlGetUserInfo =
+    //       "select id from users where username = '" + username + "'";
+    //     connection.query(sqlGetUserInfo, (err, results) => {
+    //       if (!err) {
+    //         const userId = results[0].id;
+    //         const sqlGetRoomInfo =
+    //           "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" +
+    //           roomId +
+    //           "';";
+    //         console.log(sqlGetRoomInfo);
+    //         connection.query(sqlGetRoomInfo, (err, results) => {
+    //           if (!err) {
+    //             const users = {};
+    //             for (let i = 0; i < 4; i++) {
+    //               if (results[i]) {
+    //                 users["user" + i] = {
+    //                   id: results[i].id,
+    //                   username: results[i].username,
+    //                   gender: results[i].gender,
+    //                   avatar: results[i].avatar,
+    //                 };
+    //               } else {
+    //                 users["user" + i] = null;
+    //               }
+    //             }
+    //             const roomResult = {
+    //               roomId: results[0].roomId,
+    //               result: results[0].result,
+    //               totalUser: results[0].totalUser,
+    //               users: users,
+    //             };
+    //             console.log(roomResult);
+    //             const sqlAddUserToARoom =
+    //               "insert into room_user values('" +
+    //               roomId +
+    //               "', " +
+    //               userId +
+    //               ");";
+    //             connection.query(sqlAddUserToARoom, (err, results) => {
+    //               socket.broadcast.emit("new-user-join", {
+    //                 status: "success",
+    //                 data: roomResult,
+    //               });
+    //             });
+    //           }
+    //         });
+    //       }
+    //     });
+    //   });
+    // });
 
     socket.on("disconnect", (data) => {
       console.log("con cac " + newUserToken);
@@ -635,26 +639,6 @@ app.post("/joinRoom", (req, res) => {
               res.json({ status: "error", message: err });
             } else {
               let totalUser = parseInt(results[0].totalUser);
-              const users = {};
-              for (let i = 0; i < 4; i++) {
-                if (results[i]) {
-                  users["user" + i] = {
-                    id: results[i].id,
-                    username: results[i].username,
-                    gender: results[i].gender,
-                    avatar: results[i].avatar,
-                  };
-                } else {
-                  users["user" + i] = null;
-                }
-              }
-              const roomResult = {
-                roomId: results[0].roomId,
-                result: results[0].result,
-                totalUser: results[0].totalUser,
-                users: users,
-              };
-              console.log(roomResult);
               if (totalUser < 1 || totalUser > 3) {
                 res.json({ status: "error", message: "Cannot join this room" });
               } else {
@@ -680,8 +664,36 @@ app.post("/joinRoom", (req, res) => {
                       if (err) {
                         res.json({ status: "error", message: err });
                       } else {
-                        res.json({ status: "success", data: roomResult });
-                        console.log(roomResult);
+                        const sqlUpdateResponseData =
+                          "select r.roomId, r.result, r.totalUser, u.id, u.username, u.avatar, u.gender, u.wins from rooms r, users u, room_user ru where ru.userId = u.id and r.roomId = ru.roomId and r.roomId = '" +
+                          roomId +
+                          "';";
+                        connection.query(
+                          sqlUpdateResponseData,
+                          (err, results) => {
+                            const users = {};
+                            for (let i = 0; i < 4; i++) {
+                              if (results[i]) {
+                                users["user" + i] = {
+                                  id: results[i].id,
+                                  username: results[i].username,
+                                  gender: results[i].gender,
+                                  avatar: results[i].avatar,
+                                };
+                              } else {
+                                users["user" + i] = null;
+                              }
+                            }
+                            const roomResult = {
+                              roomId: results[0].roomId,
+                              result: results[0].result,
+                              totalUser: results[0].totalUser,
+                              users: users,
+                            };
+                            console.log(roomResult);
+                            res.json({ status: "success", data: roomResult });
+                          }
+                        );
                       }
                     });
                   }
