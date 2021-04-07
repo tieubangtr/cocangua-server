@@ -106,7 +106,7 @@ io.on("connection", (socket) => {
                   totalUser: results[0].totalUser,
                   users: users,
                 };
-                console.log(roomResult);
+                console.log("Day la thang dau buoi moi vao ne : " + roomResult);
                 socket.broadcast.emit("new-user-join", {
                   status: "success",
                   data: roomResult,
