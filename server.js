@@ -70,7 +70,6 @@ io.on("connection", (socket) => {
     // });
 
     socket.on("join-room", (data) => {
-      console.log("dit con me server")
       console.log("Du lieu gui len la cai nay: " + data.token + " va cai nay " + data.rid);
       const token = data.token;
       jwt.verify(token, "daylamabimatkhongtknaoduocdongvao", (err, user) => {
@@ -106,7 +105,7 @@ io.on("connection", (socket) => {
                   totalUser: results[0].totalUser,
                   users: users,
                 };
-                console.log("Day la thang dau buoi moi vao ne : " + roomResult);
+                console.log(roomResult);
                 socket.broadcast.emit("new-user-join", {
                   status: "success",
                   data: roomResult,
@@ -119,7 +118,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", (data) => {
-      console.log("con cac " + newUserToken);
+      console.log(newUserToken);
       if (newUserToken) {
         jwt.verify(
           newUserToken,
